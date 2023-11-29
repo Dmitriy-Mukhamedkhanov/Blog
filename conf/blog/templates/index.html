@@ -1,0 +1,60 @@
+<!--{% load static %}-->
+<!DOCTYPE>
+<html >
+<head>
+	<title>Мой блог</title>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+	<link rel="stylesheet" href="{% static 'css/style.css' %}">
+	<link rel="stylesheet" href="{% static 'css/style.css' %}" type="text/css" media="all" />
+	<link rel="shortcut icon" href="css/images/favicon.ico" />
+</head>
+<body>
+
+<div class="shell">
+	<div class="border">
+		<div id="navigation">
+			<ul>
+			{% if user.is_authenticated %}
+				<h1>Вы авторизованы</h1>
+			    <li><a href="/" class="active">Главная</a></li>
+				{% if user.is_superuser %}
+			    <li><a href="/admin">Админ панель</a></li>
+				{% endif %}
+			    <li><a href="{% url 'dashboard' %}">Личный кабинет</a></li>
+			    <li><a href="{% url 'logout' %}">Выйти</a></li>
+
+			{% else %}
+				<h1>Вы НЕ авторизованы</h1>
+			    <li><a href="/" class="active">Главная</a></li>
+				<li><a href="{% url 'login' %}">Авторизация</a></li>
+			{% endif %}
+			</ul>
+		</div>
+		<form action="{% url 'search_result' %}" method="get">
+			<input type="search" placeholder="Search name" name="data">
+			<button type="submit">Search</button>
+		</form>
+
+		<div id="main">
+			<div id="content" class="left">
+				<div class="projects">
+                <h1>Мой блог</h1>
+				{% for i in show %}
+					<h3>Название картинки: <a href="{% url 'page' i.id %}">{{ i.name }}</a></h3>
+					<div class="image left">
+						<img src="{{ i.image.url }}" alt="не найдено" width="200">
+						<h3>Описание: {{ i.description }}</h3>
+						<p>Автор:  {{ i.author }} </p>
+					</div>
+                {% endfor %}
+				</div>
+			</div>
+			<div class="cl">&nbsp;</div>
+		</div>
+	</div>
+	<div id="footer">
+		<p class="copy right">Copyright &copy;  2023 </p>
+	</div>
+</div>
+</body>
+</html>

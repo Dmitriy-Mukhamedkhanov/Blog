@@ -1,0 +1,80 @@
+<!--  # post.id это id данного поста??????-->
+<h5>blog_page</h5>
+<!DOCTYPE>
+<html >
+<head>
+	<title>Мой блог</title>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+	<link rel="stylesheet" href="css/style.css" type="text/css" media="all" />
+	<link rel="shortcut icon" href="css/images/favicon.ico" />
+</head>
+<body>
+
+<div class="shell">
+	<div class="border">
+		<div id="navigation">
+			<ul>
+			    <li><a href="/" class="active">Главная</a></li>
+			    <li><a href="/admin">Админ панель</a></li>
+			</ul>
+		</div>
+		<div id="main">
+			<div id="content" class="left">
+				<div class="projects">
+                	<h1>{{ post.name }}</h1>
+                	<p align="center">
+                    	<img src="{{ post.image.url }}" alt="не найдено" width="100">
+                	</p>
+					<div class="image center">
+						<h3>Описание:  {{ post.description }}</h3>
+						<p>Автор:  {{ post.author }} </p>
+					</div>
+				</div>
+			</div>
+			<div>
+				<p>Понравилось: {{ post.likes_set.all.count }}</p>
+				<br>
+				<a href="{% url 'add_likes' post.id %}">Нравится</a>
+				<a href="{% url 'delete_likes' post.id %}">Не нравится</a>
+			</div>
+			<div class="cl">&nbsp;</div>
+		</div>
+	</div>
+	<div class="form-comment">
+
+
+		<h3>Оставить комментарий</h3>
+		<div>
+			<form action="{% url 'add_comments' post.id %}" method="post">
+				{% csrf_token %}
+				<div>
+					<label>Ваш Комментарий</label>
+					<textarea name="text_comment"></textarea>
+				</div>
+				<div>
+					<label>Ваше Имя</label>
+					<input type="text" name="author_comment">
+				</div>
+				<div>
+					<label>Опубликовать</label>
+					<input type="submit">
+				</div>
+			</form>
+		{% for i in comment %}
+			Комментарий: {{ i.text_comment }} <br>
+			Автор: {{ i.author_comment }} <br>
+			Удалить комментарий <a href="{% url 'delete_comment' i.id %}">X</a>
+<!--			{% if i.author_comment == user %}-->
+
+<!--			{% endif %}-->
+			<br>
+			<br>
+		{% endfor %}
+		</div>
+	</div>
+	<div id="footer">
+		<p class="copy right">Copyright &copy;  2023 </p>
+	</div>
+</div>
+</body>
+</html

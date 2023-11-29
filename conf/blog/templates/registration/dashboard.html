@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block title %} Панель управления {% endblock %}
+
+{% block content %}
+  <h1>Панель управления</h1>
+    Привет, {{ request.user.username }}
+    <p>Добро пожаловать на вашу страницу<p>
+    <p>Ты можешь изменить свой пароль <a href="{% url 'password_change' %}">ЗДЕСЬ</a></p>
+    <a href="{% url 'logout' %}">Выйти</a>
+  <a href="{% url 'login' %}">Личный кабинет</a>
+{% endblock %}

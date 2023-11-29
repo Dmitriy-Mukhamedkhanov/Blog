@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}{% endblock %}</title>
+</head>
+<body>
+    <div id="header">
+        <span class="logo">Джанго Аутентификация</span>
+        {% if request.user.is_authenticated %}
+        <u1 class="menu">
+            <li {% if section == 'dashboard' %} class='selected' {% endif %}>
+                <a href="{% url 'dashboard' %}">My dashboard</a>
+            </li>
+        </u1>
+        {% endif %}
+    </div>
+    <div id="content">
+        {% block content %}
+        {% endblock %}
+    </div>
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE>
+<h3>user_page</h3>
+<html >
+<head>
+	<title>Моя страница</title>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+	<link rel="stylesheet" href="css/style.css" type="text/css" media="all" />
+	<link rel="shortcut icon" href="css/images/favicon.ico" />
+</head>
+<body>
+<p>Описание</p>
+<div class="shell">
+	<div class="border">
+		<div id="navigation">
+			<ul>
+			    <li><a href="/" class="active">Главная</a></li>
+			    <li><a href="{% url 'logout' %}">Выйти</a></li>
+			    <li><a href="{% url 'transition_page' %}">Создать пост</a></li>
+			</ul>
+		</div>
+		<form action="{% url 'search_result' %}" method="post">
+			{% csrf_token %}
+			<input type="search" placeholder="Search name" name="data">
+			<button type="submit">Search</button>
+		</form>
+
+		<div id="main">
+			<div id="content" class="left">
+				<div class="projects">
+                <h1>Моя страница</h1>
+				{% for i in person_photo %}
+					<h3>Название картинки: <a href="{% url 'page' i.id %}">{{ i.name }}</a></h3>
+					<div class="image left">
+						<img src="{{ i.image.url }}" alt="не найдено" width="200">
+						<a href="{% url 'delete' i.id %}">Удалить картинку</a>
+						<h3>Описание: {{ i.description }}</h3>
+						<p>Автор:  {{ i.author }} </p>
+						{% if user.is_authenticated %}
+							<a href="{% url 'change' i.id %}">Изменить пост</a>
+						{% endif %}
+					</div>
+                {% endfor %}
+				</div>
+			</div>
+			<div class="cl">&nbsp;</div>
+		</div>
+	</div>
+	<div id="footer">
+		<p class="copy right">Copyright &copy;  2023 </p>
+	</div>
+</div>
+</body>
+</html>
