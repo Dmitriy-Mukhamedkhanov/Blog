@@ -1,9 +1,9 @@
 from django.urls import path
 
-from api.views import Photo, Info, Random
+from api.views import PhotosListView, Info, Random
 
 urlpatterns = [
-    path("test/", Photo.as_view()),
+    path("photos/", PhotosListView.as_view()),
     path("info/", Info.as_view()),
     path("random/", Random.as_view()),
     ]
