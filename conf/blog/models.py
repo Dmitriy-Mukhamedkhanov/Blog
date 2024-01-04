@@ -35,7 +35,8 @@ class Comment(models.Model):
     published_comment = models.DateField(auto_now=True, verbose_name='дата публикации комментария')
     text_comment = models.TextField(verbose_name='текст комментария')
     author_comment = models.TextField('Имя', max_length=20)
-    image_comment = models.ForeignKey('Photo', on_delete=models.CASCADE, related_name='comment_photo', verbose_name='добавить фото')
+    image_comment = models.ForeignKey('Photo', on_delete=models.CASCADE, related_name='comment_photo',
+                                      verbose_name='добавить фото')
 
     def __str__(self):
         return f'{self.author_comment},{self.text_comment}'
