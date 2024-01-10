@@ -4,7 +4,6 @@ import random
 from api.serializers import PhotoSerializer, CommentSerializer
 from blog.models import Photo, Comment
 
-
 class PhotoListView(APIView):
     def get(self, request):
         photos = Photo.objects.all()
