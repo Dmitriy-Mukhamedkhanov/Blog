@@ -1,10 +1,11 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
 import random
-from api.serializers import PhotoSerializer, CommentSerializer
+from api.serializers import PhotoSerializer, CommentSerializer, PhotoUpdateSerializer, CommentUpdateSerializer
 from blog.models import Photo, Comment
 
-class PhotoListView(APIView):
+
+class PhotoListCreateView(APIView):
     def get(self, request):
         photos = Photo.objects.all()
         serializer = PhotoSerializer(photos, many=True)
@@ -14,14 +15,26 @@ class PhotoListView(APIView):
         data = request.data
         serializer = PhotoSerializer(data=data)
         serializer.is_valid(raise_exception=True)
+        photo = serializer.save()
 
-        photo = Photo.objects.create(
-            name=serializer.validated_data['name'],
-            description=serializer.validated_data['description'],
-            image=serializer.validated_data['image'],
-            author=serializer.validated_data['author'],
-        )
         return Response(PhotoSerializer(photo).data)
+
+
+class PhotoUpdateView(APIView):
+
+    def patch(self, request, id):
+        photo = Photo.objects.filter(id=id)
+        if not photo.exists():
+            return Response({
+                'error': 'not found photo with this id'
+            })
+        photo = photo.first()
+        data = request.data
+        serializer = PhotoUpdateSerializer(data=data,
+                                           instance=photo)
+        serializer.is_valid(raise_exception=True)
+        photo = serializer.save()
+        return Response(PhotoUpdateSerializer(photo).data)
 
 
 class CommentListView(APIView):
@@ -34,11 +47,23 @@ class CommentListView(APIView):
         data = request.data
         serializer = CommentSerializer(data=data)
         serializer.is_valid(raise_exception=True)
-        comment = Comment.objects.create(
-            text_comment=serializer.validated_data['text_comment'],
-            author_comment=serializer.validated_data['author_comment'],
-            image_comment=serializer.validated_data['image_comment'],
-        )
+        comment = serializer.save()
+        return Response(CommentSerializer(comment).data)
+
+
+class CommentUpdateView(APIView):
+    def patch(self, request, id):
+        comment = Comment.objects.filter(id=id)
+        if not comment.exists():
+            return Response({
+                'error': 'not found Comment with this id'
+            })
+        comment = comment.first()
+        data = request.data
+        serializer = CommentUpdateSerializer(data=data,
+                                             instance=comment)
+        serializer.is_valid(raise_exception=True)
+        comment = serializer.save()
         return Response(CommentSerializer(comment).data)
 
 
