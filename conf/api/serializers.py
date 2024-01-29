@@ -1,16 +1,25 @@
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
-from blog.models import User, Photo, Comment
+from blog.models import Photo, Comment
 
 
-class PhotoSerializer(serializers.Serializer):
-    name = serializers.CharField(max_length=150)
-    description = serializers.CharField()
-    published = serializers.DateField(read_only=True)
-    image = serializers.ImageField()
-    author = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
-    id = serializers.IntegerField(read_only=True)
+class PhotoSerializer(serializers.ModelSerializer):
+    author = serializers.SerializerMethodField()
+
+    def get_author(self, obj):
+        author = obj.author.username
+        return author
+
+    class Meta:
+        model = Photo
+
+        fields = (
+            'name',
+            'description',
+            'image',
+            'author',
+        )
 
     def create(self, validated_data):
         photo = Photo.objects.create(
@@ -46,6 +55,45 @@ class PhotoUpdateSerializer(serializers.Serializer):
             instance.image = validated_data['image']
         instance.save()
         return instance
+
+
+class PhotoInfoSerializer(serializers.ModelSerializer):
+    author = serializers.SerializerMethodField()
+
+    def get_author(self, obj):
+        author = obj.author.username
+        return author
+
+    text_comment = serializers.SerializerMethodField()
+
+    def get_text_comment(self, obj):
+        text_comment = obj.comment_photo.all()
+        serializer = CommentForPhotoSerializer(text_comment, many=True)
+        return serializer.data
+
+    likes_count = serializers.SerializerMethodField()
+
+    def get_likes_count(self, obj):
+        likes_count = obj.likes_set.all().count()
+        return likes_count
+    class Meta:
+        model = Photo
+
+        fields = (
+            'likes_count',
+            'name',
+            'description',
+            'image',
+            'author',
+            'text_comment',
+        )
+class CommentForPhotoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
+        fields = (
+            'text_comment',
+            'author_comment',
+        )
 
 
 class CommentSerializer(serializers.Serializer):

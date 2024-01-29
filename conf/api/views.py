@@ -1,7 +1,8 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
 import random
-from api.serializers import PhotoSerializer, CommentSerializer, PhotoUpdateSerializer, CommentUpdateSerializer
+from api.serializers import PhotoSerializer, CommentSerializer, PhotoUpdateSerializer, CommentUpdateSerializer, \
+    PhotoInfoSerializer
 from blog.models import Photo, Comment
 
 
@@ -20,8 +21,19 @@ class PhotoListCreateView(APIView):
         return Response(PhotoSerializer(photo).data)
 
 
-class PhotoUpdateView(APIView):
+class PhotoInfoView(APIView):
+    def get(self, request, id):
+        photo = Photo.objects.filter(id=id)
+        photo = photo.first()
+        if not photo:
+            return Response({
+                'error': 'not found photo with this id'
+            })
+        serializer = PhotoInfoSerializer(photo)
+        return Response(serializer.data)
 
+
+class PhotoUpdateView(APIView):
     def patch(self, request, id):
         photo = Photo.objects.filter(id=id)
         if not photo.exists():
