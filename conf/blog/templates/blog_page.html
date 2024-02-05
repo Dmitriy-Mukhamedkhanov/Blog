@@ -32,7 +32,7 @@
 				</div>
 			</div>
 			<div>
-				<p>Понравилось: {{ post.likes_set.all.count }}</p>
+				<p>Понравилось: {{ likes.count }}</p>
 				<br>
 				<a href="{% url 'add_likes' post.id %}">Нравится</a>
 				<a href="{% url 'delete_likes' post.id %}">Не нравится</a>

@@ -48,7 +48,7 @@ class Comment(models.Model):
 
 
 class Likes(models.Model):
-    ip = models.CharField('IP-адрес', max_length=100)
-    # boolean_value = models.BooleanField()
-    # user
+    ip = models.CharField('IP-адрес', max_length=100, blank=True)
+    boolean_value = models.BooleanField(blank=True, default=True)
     pos = models.ForeignKey(Photo, verbose_name='Публикация', on_delete=models.CASCADE)
+    user = models.ForeignKey('User', on_delete=models.CASCADE)

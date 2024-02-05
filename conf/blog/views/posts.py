@@ -21,12 +21,11 @@ class PostDetailView(View):
 
     def get(self, request, pk):
         outcome = PostDetailService.execute({"id": pk})
-        # post = Photo.objects.get(id=pk)
-        # comment = Comment.objects.filter(image_comment=post)
         return render(request, 'blog_page.html',
                 context={
                             'post': outcome["photo"],
-                            'comment': outcome["comments"]
+                            'comment': outcome["comments"],
+                            'likes': outcome["likes"]
                 }
         )
 
