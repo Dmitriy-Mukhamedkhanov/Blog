@@ -11,7 +11,7 @@ class AddComments(View):
         outcome = AddCommentsService.execute(
             {
                 "text_comment": request.POST["text_comment"],
-                "author_comment": request.POST["author_comment"],
+                "author_comment": request.user,
                 "id": pk
             },
         )

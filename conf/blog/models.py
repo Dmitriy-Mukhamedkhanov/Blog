@@ -34,7 +34,7 @@ class Photo(models.Model):
 class Comment(models.Model):
     published_comment = models.DateField(auto_now=True, verbose_name='дата публикации комментария')
     text_comment = models.TextField(verbose_name='текст комментария')
-    author_comment = models.TextField('Имя', max_length=20)
+    author_comment = models.ForeignKey('User', on_delete=models.CASCADE)
     image_comment = models.ForeignKey('Photo', on_delete=models.CASCADE, related_name='comment_photo',
                                       verbose_name='добавить фото')
 
@@ -48,7 +48,6 @@ class Comment(models.Model):
 
 
 class Likes(models.Model):
-    ip = models.CharField('IP-адрес', max_length=100, blank=True)
-    boolean_value = models.BooleanField(blank=True, default=True)
+    boolean_value = models.BooleanField()
     pos = models.ForeignKey(Photo, verbose_name='Публикация', on_delete=models.CASCADE)
     user = models.ForeignKey('User', on_delete=models.CASCADE)

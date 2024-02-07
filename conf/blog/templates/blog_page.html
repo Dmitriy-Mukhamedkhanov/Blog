@@ -51,22 +51,18 @@
 					<label>Ваш Комментарий</label>
 					<textarea name="text_comment"></textarea>
 				</div>
-				<div>
-					<label>Ваше Имя</label>
-					<input type="text" name="author_comment">
-				</div>
-				<div>
-					<label>Опубликовать</label>
-					<input type="submit">
-				</div>
+				{% if request.user.is_authenticated %}
+					<div>
+						<label>Опубликовать</label>
+						<input type="submit">
+					</div>
+				{% endif %}
 			</form>
 		{% for i in comment %}
 			Комментарий: {{ i.text_comment }} <br>
 			Автор: {{ i.author_comment }} <br>
 			Удалить комментарий <a href="{% url 'delete_comment' i.id %}">X</a>
-<!--			{% if i.author_comment == user %}-->
 
-<!--			{% endif %}-->
 			<br>
 			<br>
 		{% endfor %}
