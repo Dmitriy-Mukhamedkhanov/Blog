@@ -48,6 +48,6 @@ class Comment(models.Model):
 
 
 class Likes(models.Model):
-    boolean_value = models.BooleanField()
+    boolean_value = models.BooleanField(blank=True, default=True)
     pos = models.ForeignKey(Photo, verbose_name='Публикация', on_delete=models.CASCADE)
     user = models.ForeignKey('User', on_delete=models.CASCADE)
