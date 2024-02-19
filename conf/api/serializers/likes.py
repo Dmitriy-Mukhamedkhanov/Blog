@@ -1,10 +1,10 @@
 from rest_framework import serializers
-from rest_framework.response import Response
+from rest_framework.exceptions import ValidationError
 
 from blog.models import Likes, Photo
 
 
-class LikeListCreateSerializer(serializers.ModelSerializer):
+class LikeListSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField(read_only=True)
     pos = serializers.SerializerMethodField(read_only=True)
 
@@ -25,9 +25,9 @@ class LikeListCreateSerializer(serializers.ModelSerializer):
         return pos
 
 
-
-
-class LikeCreateSerializer(serializers.ModelSerializer):
+class LikeCreateUpdateSerializer(serializers.ModelSerializer):
+    pos = serializers.IntegerField(required=False)
+    boolean_value = serializers.BooleanField(required=True)
 
     class Meta:
         model = Likes
@@ -45,59 +45,23 @@ class LikeCreateSerializer(serializers.ModelSerializer):
         )
         return like
 
-    # def validate(self, attrs):
-        # user = attrs['user'].id
-        # id = self.context['id']
-        # photo = Photo.objects.filter(id=id)
-        # if not photo.exists():
-        #     return Response({
-        #         'error': 'no photo found with this ID'
-        #     })
-        # like = Likes.objects.filter(pos=id, user=user)
-        # if like.exists():
-        #     return Response({
-        #         'error': 'like already exists'
-        #     })
-        # return attrs
-
-
-class LikeUpdateSerializer(serializers.ModelSerializer):
-    pos = serializers.SerializerMethodField(read_only=True)
-
-    def get_pos(self, obj):
-        pos = obj.pos_id
-        return pos
-    class Meta:
-        model = Likes
-        fields = (
-            'boolean_value',
-            'pos',
-            'user',
-        )
-
     def update(self, instance, validated_data):
-        A = instance.boolean_value
-        B = validated_data['boolean_value']
-        if validated_data['boolean_value'] != None:
-            instance.boolean_value = validated_data['boolean_value']
-        else:
-            return Response({
-                'error': 'enter boolean_value'
-            })
-
+        instance.boolean_value = validated_data['boolean_value']
         instance.save()
         return instance
 
-class LikeDeleteSerializer(serializers.ModelSerializer):
-    pos = serializers.SerializerMethodField(read_only=True)
-
-    def get_pos(self, obj):
-        pos = obj.pos_id
-        return pos
-    class Meta:
-        model = Likes
-        fields = (
-            'boolean_value',
-            'pos',
-            'user',
-        )
+    def validate(self, attrs):
+        if self.context['method'] == 'POST':
+            user_id = attrs['user'].id
+            photo_id = self.context['id']
+            photo = Photo.objects.filter(id=photo_id)
+            if not photo.exists():
+                raise ValidationError({
+                    'error': 'no photo found with this ID'
+                })
+            like = Likes.objects.filter(pos=photo_id, user=user_id)
+            if like.exists():
+                raise ValidationError({
+                    'error': 'like already exists'
+                })
+        return attrs
