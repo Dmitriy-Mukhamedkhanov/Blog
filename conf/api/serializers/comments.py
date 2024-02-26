@@ -18,14 +18,13 @@ class CommentSerializer(serializers.ModelSerializer):
         fields = (
             'published_comment',
             'text_comment',
-            'author_comment',
             'image_comment',
         )
 
     def create(self, validated_data):
         comment = Comment.objects.create(
             text_comment=validated_data['text_comment'],
-            author_comment=validated_data['author_comment'],
+            author_comment=self.context['author_id'],
             image_comment=validated_data['image_comment'],
         )
         return comment

@@ -13,7 +13,7 @@ class PhotoListCreateView(APIView):
 
     def post(self, request):
         data = request.data
-        serializer = PhotoListCreateSerializer(data=data, context={'author_id': data.get('author_id')})
+        serializer = PhotoListCreateSerializer(data=data, context={'author_id': request.user})
         serializer.is_valid(raise_exception=True)
         photo = serializer.save()
         return Response(PhotoListCreateSerializer(photo).data)
@@ -21,22 +21,12 @@ class PhotoListCreateView(APIView):
 
 class PhotoDetailUpdateDeleteView(APIView):
     def get(self, request, id):
-        photo = Photo.objects.filter(id=id)
-        photo = photo.first()
-        if not photo:
-            return Response({
-                'error': 'not found photo with this id'
-            })
+        photo = get_object_or_404(Photo, id=id)
         serializer = PhotoInfoSerializer(photo)
         return Response(serializer.data)
 
     def patch(self, request, id):
-        photo = Photo.objects.filter(id=id)
-        if not photo.exists():
-            return Response({
-                'error': 'not found photo with this id'
-            })
-        photo = photo.first()
+        photo = get_object_or_404(Photo, id=id, author=request.user)
         data = request.data
         serializer = PhotoUpdateSerializer(data=data,
                                            instance=photo)
@@ -45,6 +35,6 @@ class PhotoDetailUpdateDeleteView(APIView):
         return Response(PhotoUpdateSerializer(photo).data)
 
     def delete(self, request, id):
-        photo = get_object_or_404(Photo, id=id)
+        photo = get_object_or_404(Photo, id=id, author=request.user)
         photo.delete()
         return Response(status=204)

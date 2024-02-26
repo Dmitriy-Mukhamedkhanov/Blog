@@ -13,7 +13,7 @@ class CommentListCreateView(APIView):
 
     def post(self, request):
         data = request.data
-        serializer = CommentSerializer(data=data)
+        serializer = CommentSerializer(data=data, context={'author_id': request.user})
         serializer.is_valid(raise_exception=True)
         comment = serializer.save()
         return Response(CommentSerializer(comment).data)
@@ -21,22 +21,12 @@ class CommentListCreateView(APIView):
 
 class CommentDetailUpdateDeleteView(APIView):
     def get(self, request, id):
-        comment = Comment.objects.filter(id=id)
-        comment = comment.first()
-        if not comment:
-            return Response({
-                'error': 'not found comment with this id'
-            })
+        comment = get_object_or_404(Comment, id=id)
         serializer = CommentSerializer(comment)
         return Response(serializer.data)
 
     def patch(self, request, id):
-        comment = Comment.objects.filter(id=id)
-        if not comment.exists():
-            return Response({
-                'error': 'not found Comment with this id'
-            })
-        comment = comment.first()
+        comment = get_object_or_404(Comment, id=id, author_comment=request.user)
         data = request.data
         serializer = CommentUpdateSerializer(data=data,
                                              instance=comment)
@@ -45,6 +35,6 @@ class CommentDetailUpdateDeleteView(APIView):
         return Response(CommentSerializer(comment).data)
 
     def delete(self, request, id):
-        photo = get_object_or_404(Comment, id=id)
+        photo = get_object_or_404(Comment, id=id, author_comment=request.user)
         photo.delete()
         return Response(status=204)

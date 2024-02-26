@@ -33,15 +33,14 @@ class LikeCreateUpdateSerializer(serializers.ModelSerializer):
         model = Likes
         fields = (
             'boolean_value',
-            'pos',
-            'user'
+            'pos'
         )
 
     def create(self, validated_data):
         like = Likes.objects.create(
             boolean_value=validated_data['boolean_value'],
             pos_id=self.context['id'],
-            user_id=validated_data['user'].id
+            user_id=self.context['author_id'].id
         )
         return like
 
@@ -52,7 +51,7 @@ class LikeCreateUpdateSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         if self.context['method'] == 'POST':
-            user_id = attrs['user'].id
+            user_id = self.context['author_id']
             photo_id = self.context['id']
             photo = Photo.objects.filter(id=photo_id)
             if not photo.exists():

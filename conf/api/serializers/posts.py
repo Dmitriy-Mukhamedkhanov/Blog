@@ -26,18 +26,22 @@ class PhotoListCreateSerializer(serializers.ModelSerializer):
             name=validated_data['name'],
             description=validated_data['description'],
             image=validated_data['image'],
-            author_id=int(validated_data['author_id']),
+            author_id=validated_data['author_id'].id,
         )
         return photo
 
     def validate(self, attrs):
-        if self.context['author_id'] is None:
-            raise ValidationError('Поле author_id обязательное')
+        if self.context['author_id'].id is None:
+            raise ValidationError('you are not registred')
         attrs['author_id'] = self.context['author_id']
         return attrs
 
 
 class PhotoUpdateSerializer(serializers.ModelSerializer):
+    name = serializers.CharField(required=False)
+    description = serializers.CharField(required=False)
+    image = serializers.ImageField(required=False)
+
     class Meta:
         model = Photo
         fields = (
@@ -47,7 +51,8 @@ class PhotoUpdateSerializer(serializers.ModelSerializer):
         )
 
     def update(self, instance, validated_data):
-        instance.name = validated_data['name']
+        if validated_data.get('name'):
+            instance.name = validated_data['name']
         if validated_data.get('description'):
             instance.description = validated_data['description']
         if validated_data.get('image'):
