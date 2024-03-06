@@ -10,8 +10,8 @@ from blog.models import Photo
 
 @login_required
 def dashboard(request):
-    person_photo = Photo.objects.filter(author=request.user)  # сравнивает объект author и объект из запроса
-    # person_photo = Photo.objects.filter(author__id=request.user.id)  # сравнивает id автора и id юзера из запроса
+    person_photo = Photo.objects.filter(author=request.user)
+    # person_photo = Photo.objects.filter(author__id=request.user.id)
     return render(request, 'user_page.html', {'person_photo': person_photo})
 
 

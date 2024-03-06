@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from api.serializers.posts import PhotoListCreateSerializer, PhotoInfoSerializer, PhotoUpdateSerializer
 from blog.models import Photo
+from api.permissions import IsAuthorObject
 
 
 class PhotoListCreateView(APIView):
@@ -22,7 +23,7 @@ class PhotoListCreateView(APIView):
 
 
 class PhotoDetailUpdateDeleteView(APIView):
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly, IsAuthorObject]
     def get(self, request, id):
         photo = get_object_or_404(Photo, id=id)
         serializer = PhotoInfoSerializer(photo)
@@ -30,10 +31,7 @@ class PhotoDetailUpdateDeleteView(APIView):
 
     def patch(self, request, id):
         photo = get_object_or_404(Photo, id=id)
-        if photo.author != request.user:
-            return Response({
-                'error': 'this user not found'
-            }, status=403)
+        self.check_object_permissions(request, photo.author)
         data = request.data
         serializer = PhotoUpdateSerializer(data=data,
                                            instance=photo)
@@ -43,9 +41,6 @@ class PhotoDetailUpdateDeleteView(APIView):
 
     def delete(self, request, id):
         photo = get_object_or_404(Photo, id=id)
-        if photo.author != request.user:
-            return Response({
-                'error': 'this user not found'
-            }, status=403)
+        self.check_object_permissions(request, photo.author)
         photo.delete()
         return Response(status=204)

@@ -9,6 +9,7 @@ from blog.models import Likes, Photo
 
 class LikeListCreateUpdateDeleteView(APIView):
     permission_classes = [IsAuthenticatedOrReadOnly]
+
     def get(self, request, id):
         photo = get_object_or_404(Photo, id=id)
         like = Likes.objects.filter(pos=photo, boolean_value=True)
@@ -31,11 +32,7 @@ class LikeListCreateUpdateDeleteView(APIView):
 
     def patch(self, request, id):
         data = request.data
-        like = get_object_or_404(Likes, pos=id)
-        if like.user != request.user:
-            return Response({
-                'error': 'this user not found'
-            }, status=403)
+        like = get_object_or_404(Likes, pos=id, user=request.user.id)
         serializer = LikeCreateUpdateSerializer(data=data, instance=like,
                                                 context={'method': request.method})
         serializer.is_valid(raise_exception=True)
@@ -43,10 +40,6 @@ class LikeListCreateUpdateDeleteView(APIView):
         return Response(LikeListSerializer(like).data)
 
     def delete(self, request, id):
-        like = get_object_or_404(Likes, pos=id)
-        if like.user != request.user:
-            return Response({
-                'error': 'this user not found'
-            }, status=403)
+        like = get_object_or_404(Likes, pos=id, user=request.user.id)
         like.delete()
         return Response(status=204)
